@@ -122,8 +122,8 @@ class UcloudManager(object):
             replace_bytes_to_readable(response.headers['X-Container-Bytes-Used'])
         return result
 
-    def get_container_object_list(self, container_name, limit=None, marker=None,
-                                  prefix=None, response_format=None, path=None):
+    def get_container_objects(self, container_name, limit=None, marker=None,
+                              prefix=None, response_format=None, path=None):
         # get object name list in target container
         url = self.url + '/' + container_name
 
