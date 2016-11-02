@@ -13,8 +13,17 @@ class UcloudManager(object):
         urls = self.host + '/storage/v1/auth'
         # set request header
         headers = dict()
-        headers['X-Storage-User'] = options.EMAIL
-        headers['X-Storage-Pass'] = options.KEY
+
+        if email:
+            headers['X-Storage-User'] = email
+        else:
+            headers['X-Storage-User'] = options.EMAIL
+
+        if key:
+            headers['X-Storage-Pass'] = key
+        else:
+            headers['X-Storage-Pass'] = options.KEY
+
         response = requests.get(urls, headers=headers)
 
         # bind authenticated data to instance
@@ -28,15 +37,22 @@ class UcloudManager(object):
         self.base_headers = dict()
         self.base_headers['X-Auth-Token'] = self.auth_token
 
-    def get_container_of_account(self, params=None):
+    def get_container_of_account(self, limit=None, marker=None,
+                                 response_format=None):
         # get authenticated user's container list
         url = self.url
+        params = dict()
+        if limit:
+            params['limit'] = limit
+        if marker:
+            params['marker'] = marker
 
         # default format is json
-        if not params:
-            params = dict()
+        if not response_format:
             params['format'] = 'json'
-        response_format = params['format']
+            response_format = params['format']
+        else:
+            params['format'] = response_format
 
         # request api
         response = requests.get(url, params=params, headers=self.base_headers)
@@ -95,12 +111,40 @@ class UcloudManager(object):
     def head_container_metadata(self, container_name):
         # check container metadata
         url = self.url + '/' + container_name
-        response = requests.head(url, headers=self.base_headers)
-        return response.headers
 
-    def get_container_object_list(self, container_name):
+        # request api
+        response = requests.head(url, headers=self.base_headers)
+
+        # formatting result
+        result = dict()
+        result['object_count'] = response.headers['X-Container-Object-Count']
+        result['used_bytes'] = \
+            replace_bytes_to_readable(response.headers['X-Container-Bytes-Used'])
+        return result
+
+    def get_container_object_list(self, container_name, limit=None, marker=None,
+                                  prefix=None, response_format=None, path=None):
         # get object name list in target container
         url = self.url + '/' + container_name
+
+        # make params
+        params = dict()
+        if limit:
+            params['limit'] = limit
+        if marker:
+            params['marker'] = marker
+        if prefix:
+            params['prefix'] = prefix
+
+        if not response_format:
+            params['format'] = 'json'
+            response_format = params['format']
+        else:
+            params['format'] = response_format
+
+        # TODO: params['path'] should be made
+
+        # request api
         response = requests.get(url, headers=self.base_headers)
         return response
 
@@ -129,6 +173,8 @@ class UcloudManager(object):
         :param file_stream: file's data string - string
         :return: submit response
         """
+
+        # make file object to comfortable for uploading
         if not file_name:
             file_name = file_path.split('/')[-1]
 
