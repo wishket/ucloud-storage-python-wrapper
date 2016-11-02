@@ -146,7 +146,24 @@ class UcloudManager(object):
 
         # request api
         response = requests.get(url, headers=self.base_headers)
-        return response
+
+        # formatting result
+        result = dict()
+        if response_format == 'json' or response_format == 'xml':
+            result['container_list'] = response.content
+        else:
+            result['container_list'] = response.content.split('\n')
+            if result['container_list'][-1] == '':
+                try:
+                    result['container_list'] = result['container_list'][:-2]
+                except IndexError:
+                    pass
+
+        result['object_count'] = response.headers['X-Container-Object-Count']
+        result['used_bytes'] = \
+            replace_bytes_to_readable(response.headers['X-Container-Bytes-Used'])
+
+        return result
 
     def put_container(self, container_name):
         # create or update container
