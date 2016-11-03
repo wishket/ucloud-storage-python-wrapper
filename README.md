@@ -3,7 +3,31 @@ KT ucloud storage wrapper with python
 
 - - -
 
-it will be TOC
+   * [ucloud-storage-python-wrapper](#ucloud-storage-python-wrapper)
+      * [How to use.](#how-to-use)
+      * [Available Range](#available-range)
+      * [API Detail Desciption](#api-detail-desciption)
+         * [Api Management Object Create (init())](#api-management-object-create-init)
+         * [get container list of account (get_container_of_account())](#get-container-list-of-account-get_container_of_account)
+            * [params](#params)
+         * [get account's metadata (head_account_metadata())](#get-accounts-metadata-head_account_metadata)
+         * [add metadata to account (post_account_metadata())](#add-metadata-to-account-post_account_metadata)
+            * [params](#params-1)
+         * [get container's metadata (head_container_metadata())](#get-containers-metadata-head_container_metadata)
+            * [params](#params-2)
+         * [get container's object list (get_container_objects())](#get-containers-object-list-get_container_objects)
+            * [params](#params-3)
+         * [create container (put_container())](#create-container-put_container)
+            * [params](#params-4)
+         * [delete container (delete_container())](#delete-container-delete_container)
+            * [params](#params-5)
+         * [add metadata to container (post_container_metadata())](#add-metadata-to-container-post_container_metadata)
+            * [params](#params-6)
+         * [store object to target container (put_object_to_container())](#store-object-to-target-container-put_object_to_container)
+            * [params](#params-7)
+         * [delete object from target container (delete_object())](#delete-object-from-target-container-delete_object)
+            * [params](#params-8)
+         * [get object from target container like download. (get_object())](#get-object-from-target-container-like-download-get_object)
 
 - - -
 ## How to use.
