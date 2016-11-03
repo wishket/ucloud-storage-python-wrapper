@@ -213,15 +213,17 @@ class UcloudManager(object):
         """
         create container for authorized account
         :param container_name: container's name for create
-        :return: http response
+        :return: result status code
         """
         # create or update container
         url = self.url + '/' + container_name
 
         # request api
-        response = requests.put(url, headers=self.base_headers)
+        response = check_response_status(
+            requests.put(url, headers=self.base_headers)
+        )
 
-        return response
+        return response.status_code
 
     def delete_container(self, container_name):
         """

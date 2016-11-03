@@ -75,9 +75,9 @@ manager = UcloudManager(key=user_key, email=user_email)
 return container list and account's usage data.
 
 ###### params
-1. __limit__ (integer) is maximum container length to get
-2. __marker__ (string) is start point for container list
-3. __response_format__ (string) is type of container list data. default is __json__.
+1. __limit__ (integer - None) is maximum container length to get
+2. __marker__ (string - None) is start point for container list
+3. __response_format__ (string - 'json') is type of container list data. default is __json__.
 you can use xml format.
 
 ```
@@ -124,3 +124,121 @@ result = manager.post_account_metadata(params, action)
 result = status code (201)
 ```
 
+#### get container's metadata (`head_container_metadata()`)
+return specific container's metadata
+
+###### params
+1. __container_name__ (string) is target container's name.
+
+```
+result = manager.get_container_metadata('test')
+
+result['object_count'] = container's object count
+result['used_bytes'] = container used bytes as human readable string
+```
+
+#### get container's object list (`get_container_objects()`)
+return container's object list.
+
+###### params
+1. __container_name__ (string) is target container's name.
+2. __limit__ (integer - None) is maximum object length to get.
+3. __marker__ (string - None) is start point for object list.
+4. __response_format__ (string - 'json') is type of object list data. default is __json__.
+you can use xml format.
+5. __prefix__ (string - None) is filter for object name (django's objects filter like start_with).
+6. __path__ is not served this api yet.
+
+```
+result = manager.get_container_objects
+
+result['object_list'] = object's data as xml or json(python dict)
+result['object_count'] = account's all object count
+result['used_bytes'] = all used bytes as human readable string
+```
+
+#### create container (`put_container()`)
+it will create container as served name.
+
+###### params
+1. __container_name__ (string) is target container's name.
+
+```
+result = manager.put_container('test')
+
+result = status code (201)
+
+```
+
+
+#### delete container (`delete_container()`)
+it will delete container which name is served params.
+__you cannot delete container which has child object.__
+
+###### params
+1. __container_name__ (string) is target container's name.
+
+```
+result = manager.delete_container('test')
+
+result = status code (204)
+
+```
+
+
+#### add metadata to container (`post_container_metadata()`)
+add user custom metadata to container.
+
+###### params
+1. __container_name__ (string) is target container's name.
+2. __params__ (dict - iterable) is key & value data set for metadata.
+like {'username': 'wishket'}
+3. __action__ (string) is add or delete action. you can use 'add' or 'delete'.
+
+```
+result = manager.post_container_metadata(params, action)
+
+result = status code (201)
+```
+
+#### store object to target container (`put_object_to_container()`)
+store object data to target container.
+you can use specific file path for upload or use data stream (like django's request.FILE['target']).
+
+###### params
+1. __container_name__ (string) is target container's name.
+2. __file_path__ (string - None) is target object local path. (not url)
+3. __file_name__ (string - None) is saved name on container. if you not passed, 
+file_path name will be splited for file_name. 
+4. __file_stream__ (string - None) is stream data of file's. if you not passed, 
+script will open and read of target file_path's file.
+
+```
+# use only file_path
+result = manager.put_object_to_container('test', file_path='./test.png')
+
+# use with file_name, file_path
+result = manager.put_object_to_container('test', file_path='./test.png', file_name='te.png')
+
+# use with file_name, file_stream
+result = manager.put_object_to_container('test', file_name='te.png', file_stream=request.FILES['image'])
+
+result = status code (201)
+```
+
+#### delete object from target container (`delete_object()`)
+delete object from target container's by file_name
+
+###### params
+1. __container_name__ (string) is target container's name.
+3. __file_name__ (string) is target object's stored name.
+
+```
+result = manager.delete_object('test', 'test.png')
+
+result = status code (204)
+
+```
+
+#### get object from target container like download. (`get_object()`)
+will be add.
