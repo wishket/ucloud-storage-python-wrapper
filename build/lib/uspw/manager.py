@@ -9,6 +9,7 @@ except ImportError:
     pass
 
 
+
 class UcloudManager(object):
     host = 'https://api.ucloudbiz.olleh.com'
 
@@ -263,6 +264,7 @@ class UcloudManager(object):
         url = self.url + '/' + container_name + '/' + file_name
 
         # TODO: set parameters
+
         response = check_response_status(
             requests.get(url=url, headers=self.base_headers)
         )

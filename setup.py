@@ -1,19 +1,17 @@
 # -*- coding:utf-8 -*-
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from distutils.core import setup
 
 setup(
     # package name
-    name='ucloud-python-wrapper',
+    name='ucloud-storage-python-wrapper',
     # package version
-    version='0.0.1',
+    version='0.0.6',
+
+    py_modules=['uspw', ],
 
     # package struct
     packages=['uspw', ],
-    package_dir={'uspw': 'ucloud-storage-python-wrapper'},
     license='Apache 2.0',
 
     author='yonggill Lee',

@@ -3,7 +3,26 @@ KT ucloud storage wrapper for python
 
 - - -
 
-## Average
+## How to use.
+1. install package.
+
+`pip install ucloud-storage-python-wrapper`
+
+
+2. create manager object by authentication.
+```
+from uspw.manager import UcloudManager
+
+manager = UcloudManager(key='{user_key}', email='{ucloud_user_email}')
+```
+
+3. use wrapper api.
+```
+result = manager.put_object_to_container('my_container', file_stream)
+```
+
+
+## Available Range
 1. Account authentication : Serve specific part.
     + Token Authenticate : serve
     + IP Authenticate : not serve
