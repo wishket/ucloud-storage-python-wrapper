@@ -13,6 +13,13 @@ def replace_bytes_to_readable(object_bytes):
     return "%.1f%s" % (object_bytes, 'ZB')
 
 
+def set_django_env(settings):
+    if hasattr(settings, 'UCLOUD_EMAIL') and hasattr(settings, 'UCLOUD_KEY'):
+        return {'email': settings.UCLOUD_EMAIL,
+                'key': settings.UCLOUD_KEY}
+    raise ImportError
+
+
 def check_response_status(response):
     status = response.status_code
     if status == 401:

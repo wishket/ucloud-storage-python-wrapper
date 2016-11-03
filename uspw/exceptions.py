@@ -43,3 +43,8 @@ class ContentLengthOver(Exception):
         return u"object to upload has over content length for normal upload " \
                u"or object data not serve for storage server. " \
                u"check your file system."
+
+
+class UcloudAccountDataDoesNotExist(Exception):
+    def __str__(self):
+        return u"django settings file does not have UCLOUD_EMAIL, UCLOUD_KEY."

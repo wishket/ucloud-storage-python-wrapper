@@ -6,6 +6,7 @@ from utils import *
 # options is User Account options like Email, Key
 try:
     from django.conf import settings
+    account_set = set_django_env(settings)
 except ImportError:
     pass
 
@@ -18,15 +19,12 @@ class UcloudManager(object):
         # set request header
         headers = dict()
 
-        if email:
+        if email and key:
             headers['X-Storage-User'] = email
-        else:
-            headers['X-Storage-User'] = settings.UCLOUD_EMAIL
-
-        if key:
             headers['X-Storage-Pass'] = key
         else:
-            headers['X-Storage-Pass'] = settings.UCLOUD_KEY
+            headers['X-Storage-User'] = account_set['email']
+            headers['X-Storage-Pass'] = account_set['key']
 
         response = requests.get(urls, headers=headers)
 
