@@ -110,3 +110,17 @@ result['used_bytes'] = all used bytes as human readable string
 
 
 #### add metadata to account (`post_account_metadata()`)
+add user custom metadata to account
+
+###### params
+1. __params__ (dict - iterable) is key & value data set for metadata.
+like {'username': 'wishket'}
+
+2. __action__ (string) is add or delete action. you can use 'add' or 'delete'.
+
+```
+result = manager.post_account_metadata(params, action)
+
+result = status code (201)
+```
+
