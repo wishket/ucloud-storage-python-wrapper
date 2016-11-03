@@ -201,6 +201,7 @@ class UcloudManager(object):
     def post_container_metadata(self, container_name, params, action):
         """
         post account's metadata for add, delete
+        :param container_name: target container name
         :param params: params should iterable by key, value
         :param action: means add or delete ['add', 'delete']
         :return: result status code
