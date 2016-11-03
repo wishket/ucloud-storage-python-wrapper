@@ -3,24 +3,26 @@ KT ucloud storage wrapper for python
 
 - - -
 
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [ucloud-python-wrapper](#)
+	- [How to use.](#)
+	- [Available Range](#)
+    - [API Detail Description](#)
+- - -
 ## How to use.
 1. install package.
-
 `pip install ucloud-storage-python-wrapper`
-
-
 2. create manager object by authentication.
 ```
 from uspw.manager import UcloudManager
 
 manager = UcloudManager(key='{user_key}', email='{ucloud_user_email}')
 ```
-
 3. use wrapper api.
 ```
 result = manager.put_object_to_container('my_container', file_stream)
 ```
-
 
 ## Available Range
 1. Account authentication : Serve specific part.
@@ -50,3 +52,16 @@ result = manager.put_object_to_container('my_container', file_stream)
     + POST object (set metadata) : not serve
     + DELETE object
 5. Reseller Service API : Not serve. No Plan.
+
+## API Detail Desciption
++ Api Management Object Create
+```
+from uspw.manager import UcloudManager
+
+# use options file
+manager = UcloudManager()
+
+# use specific key, email
+manager = UcloudManager(key=user_key, email=user_email)
+
+```

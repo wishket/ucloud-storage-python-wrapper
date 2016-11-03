@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import requests
+import json
 from utils import *
 # options is User Account options like Email, Key
 try:
@@ -42,6 +43,13 @@ class UcloudManager(object):
 
     def get_container_of_account(self, limit=None, marker=None,
                                  response_format=None):
+        """
+        get authorized account's container list
+        :param limit: maximum container length to get
+        :param marker: start point of container list
+        :param response_format: response data type like json, xml
+        :return: result dict.
+        """
         # get authenticated user's container list
         url = self.url
         params = dict()
@@ -62,7 +70,9 @@ class UcloudManager(object):
 
         # formatting result
         result = dict()
-        if response_format == 'json' or response_format == 'xml':
+        if response_format == 'json':
+            result['container_list'] = json.loads(response.content)
+        elif response_format == 'xml':
             result['container_list'] = response.content
         else:
             result['container_list'] = response.content.split('\n')
@@ -86,10 +96,19 @@ class UcloudManager(object):
 
         # formatting result
         result = dict()
-        result['container_count'] = response.headers['X-Account-Container-Count']
-        result['object_count'] = response.headers['X-Account-Object-Count']
-        result['used_bytes'] = \
-            replace_bytes_to_readable(response.headers['X-Account-Bytes-Used'])
+        for key in response.headers:
+            if key == 'X-Account-Container-Count':
+                result['container_count'] = \
+                    response.headers['X-Account-Container-Count']
+            elif key == 'X-Account-Object-Count':
+                result['object_count'] = \
+                    response.headers['X-Account-Object-Count']
+            elif key == 'X-Account-Bytes-Used':
+                result['used_bytes'] = replace_bytes_to_readable(
+                    response.headers['X-Account-Bytes-Used']
+                )
+            else:
+                result[key] = response.headers[key]
         return result
 
     def post_account_metadata(self, params, action):
@@ -112,6 +131,11 @@ class UcloudManager(object):
         return response.status_code
 
     def head_container_metadata(self, container_name):
+        """
+        get container's metadata
+        :param container_name: target container name
+        :return: container's metadata dict
+        """
         # check container metadata
         url = self.url + '/' + container_name
 
@@ -120,13 +144,30 @@ class UcloudManager(object):
 
         # formatting result
         result = dict()
-        result['object_count'] = response.headers['X-Container-Object-Count']
-        result['used_bytes'] = \
-            replace_bytes_to_readable(response.headers['X-Container-Bytes-Used'])
+        for key in response.headers:
+            if key == 'X-Container-Object-Count':
+                result['object_count'] = \
+                    response.headers['X-Container-Object-Count']
+            elif key == 'X-Container-Bytes-Used':
+                result['used_bytes'] = replace_bytes_to_readable(
+                    response.headers['X-Container-Bytes-Used']
+                )
+            else:
+                result[key] = response.headers[key]
         return result
 
     def get_container_objects(self, container_name, limit=None, marker=None,
                               prefix=None, response_format=None, path=None):
+        """
+        get container's object list with rough data.
+        :param container_name: target container name
+        :param limit: max object list size
+        :param marker: object list's start point
+        :param prefix: object's prefix for list
+        :param response_format: response data type like json, xml
+        :param path: Not Served
+        :return: response data for object list
+        """
         # get object name list in target container
         url = self.url + '/' + container_name
 
@@ -152,7 +193,9 @@ class UcloudManager(object):
 
         # formatting result
         result = dict()
-        if response_format == 'json' or response_format == 'xml':
+        if response_format == 'json':
+            result['object_list'] = json.loads(response.content)
+        elif response_format == 'xml':
             result['object_list'] = response.content
         else:
             result['object_list'] = response.content.split('\n')
@@ -219,9 +262,9 @@ class UcloudManager(object):
         return response.status_code
 
     def put_object_to_container(self, container_name,
-                              file_path=None,
-                              file_name=None,
-                              file_stream=None):
+                                file_path=None,
+                                file_name=None,
+                                file_stream=None):
         """
         upload file to target container
         :param container_name:
@@ -242,25 +285,40 @@ class UcloudManager(object):
         if not file_stream:
             file_stream = open(file_path, 'rb').read()
 
-        response = requests.put(
-            url,
-            data=file_stream,
-            headers=self.base_headers
+        response = check_response_status(
+            requests.put(url, data=file_stream, headers=self.base_headers)
         )
 
-        return response
+        return response.status_code
 
     def head_object(self, container_name, file_name):
+        """
+        get object's metadata
+        :param container_name: target object's container
+        :param file_name: target object
+        :return: object header data as dict
+        """
         url = self.url + '/' + container_name + '/' + file_name
 
         response = check_response_status(
             requests.head(url, headers=self.base_headers)
         )
 
-        return response
+        return response.header
 
     def get_object(self, container_name, file_name, range=None, match=None,
                    none_match=None, modified_since=None, unmodified_since=None):
+        """
+        get object like download data.
+        :param container_name: target object's container
+        :param file_name: target object's name
+        :param range:
+        :param match:
+        :param none_match:
+        :param modified_since:
+        :param unmodified_since:
+        :return:
+        """
         url = self.url + '/' + container_name + '/' + file_name
 
         # TODO: set parameters
@@ -291,6 +349,14 @@ class UcloudManager(object):
 
     def copy_object(self, dest_container_name, dest_file_name,
                     target_container_name, target_file_name):
+        """
+        copy object from uploaded object
+        :param dest_container_name: container to create
+        :param dest_file_name: object name to create
+        :param target_container_name: container for copy
+        :param target_file_name: object name for copy
+        :return: result status code
+        """
 
         url = self.url + '/' + dest_container_name + '/' + dest_file_name
 
@@ -303,13 +369,19 @@ class UcloudManager(object):
             requests.put(url=url, headers=headers)
         )
 
-        return response
+        return response.status_code
 
     def delete_object(self, container_name, file_name):
+        """
+        delete object
+        :param container_name: target object's container
+        :param file_name: target object's name
+        :return: result status code
+        """
         url = self.url + '/' + container_name + '/' + file_name
 
         response = check_response_status(
             requests.delete(url=url, headers=self.base_headers)
         )
 
-        return response
+        return response.status_code
