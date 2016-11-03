@@ -5,7 +5,7 @@ import json
 from utils import *
 # options is User Account options like Email, Key
 try:
-    import options
+    from django.conf import settings
 except ImportError:
     pass
 
@@ -21,12 +21,12 @@ class UcloudManager(object):
         if email:
             headers['X-Storage-User'] = email
         else:
-            headers['X-Storage-User'] = options.EMAIL
+            headers['X-Storage-User'] = settings.UCLOUD_EMAIL
 
         if key:
             headers['X-Storage-Pass'] = key
         else:
-            headers['X-Storage-Pass'] = options.KEY
+            headers['X-Storage-Pass'] = settings.UCLOUD_KEY
 
         response = requests.get(urls, headers=headers)
 

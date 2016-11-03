@@ -1,14 +1,10 @@
-# ucloud-python-wrapper
-KT ucloud storage wrapper for python
+# ucloud-storage-python-wrapper
+KT ucloud storage wrapper with python
 
 - - -
 
-**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+it will be TOC
 
-- [ucloud-python-wrapper](#)
-	- [How to use.](#)
-	- [Available Range](#)
-    - [API Detail Description](#)
 - - -
 ## How to use.
 1. install package.
@@ -54,14 +50,63 @@ result = manager.put_object_to_container('my_container', file_stream)
 5. Reseller Service API : Not serve. No Plan.
 
 ## API Detail Desciption
-+ Api Management Object Create
+
+#### Api Management Object Create (`init()`)
+you can use two type of authorization.
+
+1. use specific django settings file as key file.
+    + if you want to use django.settings add two value.
+        - `UCLOUD_EMAIL = 'your email'`
+        - `UCLOUD_KEY = 'your key'`
+2. insert directly to init()
+
 ```
 from uspw.manager import UcloudManager
 
-# use options file
+# type a. use django settings file
 manager = UcloudManager()
 
-# use specific key, email
+# type b. use specific key, email
 manager = UcloudManager(key=user_key, email=user_email)
 
 ```
+
+#### get container list of account (`get_container_of_account()`)
+return container list and account's usage data.
+
+###### params
+1. __limit__ (integer) is maximum container length to get
+2. __marker__ (string) is start point for container list
+3. __response_format__ (string) is type of container list data. default is __json__.
+you can use xml format.
+
+```
+# get all container data as json (max=1000)
+result = manager.get_container_of_account()
+
+# get 200 container after container which name is 'banana' as xml
+result = manager.get_container_of_account(
+    limit=200,
+    marker='banana',
+    response_format='xml'
+)
+
+result['container_list'] = object's data as xml or json(python dict)
+result['object_count'] = account's all object count
+result['used_bytes'] = all used bytes as human readable string
+
+```
+
+#### get account's metadata (`head_account_metadata()`)
+return account's metadata
+
+```
+result = manager.head_account_metadata()
+
+result['container_count'] = account's container count
+result['object_count'] = account's all object count
+result['used_bytes'] = all used bytes as human readable string
+```
+
+
+#### add metadata to account (`post_account_metadata()`)
