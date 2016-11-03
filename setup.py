@@ -19,5 +19,6 @@ setup(
     author='yonggill Lee',
     author_email='yonggill@wishket.com',
     url='http://blog.yonggari.net',
-    description='python wrapper for KT ucloud storage service.'
+    description='python wrapper for KT ucloud storage service.',
+    keywords=['kt', 'ucloud', 'storage', 'python', 'wrapper']
 )

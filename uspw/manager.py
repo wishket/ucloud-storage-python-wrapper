@@ -9,7 +9,7 @@ from utils import *
 class UcloudManager(object):
     host = 'https://api.ucloudbiz.olleh.com'
 
-    def __init__(self, key, email):
+    def __init__(self, key=None, email=None):
         urls = self.host + '/storage/v1/auth'
         # set request header
         headers = dict()
@@ -145,17 +145,17 @@ class UcloudManager(object):
         # TODO: params['path'] should be made
 
         # request api
-        response = requests.get(url, headers=self.base_headers)
+        response = requests.get(url, params=params, headers=self.base_headers)
 
         # formatting result
         result = dict()
         if response_format == 'json' or response_format == 'xml':
-            result['container_list'] = response.content
+            result['object_list'] = response.content
         else:
-            result['container_list'] = response.content.split('\n')
-            if result['container_list'][-1] == '':
+            result['object_list'] = response.content.split('\n')
+            if result['object_list'][-1] == '':
                 try:
-                    result['container_list'] = result['container_list'][:-2]
+                    result['object_list'] = result['container_list'][:-2]
                 except IndexError:
                     pass
 
@@ -166,17 +166,55 @@ class UcloudManager(object):
         return result
 
     def put_container(self, container_name):
+        """
+        create container for authorized account
+        :param container_name: container's name for create
+        :return: http response
+        """
         # create or update container
         url = self.url + '/' + container_name
+
+        # request api
         response = requests.put(url, headers=self.base_headers)
+
         return response
 
     def delete_container(self, container_name):
+        """
+        delete container for authorized account
+        :param container_name: container's name for delete
+        :return: http response
+        """
+
         url = self.url + '/' + container_name
-        response = requests.delete(url, headers=self.base_headers)
+
+        # request api
+        response = check_response_status(
+            requests.delete(url, headers=self.base_headers)
+        )
+
         return response
 
-    def put_file_to_container(self, container_name,
+    def post_container_metadata(self, container_name, params, action):
+        """
+        post account's metadata for add, delete
+        :param params: params should iterable by key, value
+        :param action: means add or delete ['add', 'delete']
+        :return: result status code
+        """
+        # post account's metadata
+        url = self.url + '/' + container_name
+
+        headers = self.base_headers
+        for key, value in params.iteritems():
+            if action == 'add':
+                headers['X-Container-Meta-' + key] = value
+            else:
+                headers['X-Remove-Container-Meta-' + key] = value
+        response = requests.post(url, headers=headers)
+        return response.status_code
+
+    def put_object_to_container(self, container_name,
                               file_path=None,
                               file_name=None,
                               file_stream=None):
@@ -204,6 +242,71 @@ class UcloudManager(object):
             url,
             data=file_stream,
             headers=self.base_headers
+        )
+
+        return response
+
+    def head_object(self, container_name, file_name):
+        url = self.url + '/' + container_name + '/' + file_name
+
+        response = check_response_status(
+            requests.head(url, headers=self.base_headers)
+        )
+
+        return response
+
+    def get_object(self, container_name, file_name, range=None, match=None,
+                   none_match=None, modified_since=None, unmodified_since=None):
+        url = self.url + '/' + container_name + '/' + file_name
+
+        # TODO: set parameters
+
+        response = check_response_status(
+            requests.get(url=url, headers=self.base_headers)
+        )
+
+    def post_object_metadata(self, container_name, file_name, params, action):
+        """
+        post account's metadata for add, delete
+        :param params: params should iterable by key, value
+        :param action: means add or delete ['add', 'delete']
+        :return: result status code
+        """
+        # post account's metadata
+        url = self.url + '/' + container_name + '/' + file_name
+
+        headers = self.base_headers
+        for key, value in params.iteritems():
+            if action == 'add':
+                headers['X-Container-Meta-' + key] = value
+            else:
+                headers['X-Remove-Container-Meta-' + key] = value
+        response = check_response_status(
+            requests.post(url, headers=headers)
+        )
+        return response.status_code
+
+    def copy_object(self, dest_container_name, dest_file_name,
+                    target_container_name, target_file_name):
+
+        url = self.url + '/' + dest_container_name + '/' + dest_file_name
+
+        headers = self.base_headers
+        headers['X-Copy-From'] = '/' + target_container_name + \
+                                 '/' + target_file_name
+        headers['Content-Length'] = '0'
+
+        response = check_response_status(
+            requests.put(url=url, headers=headers)
+        )
+
+        return response
+
+    def delete_object(self, container_name, file_name):
+        url = self.url + '/' + container_name + '/' + file_name
+
+        response = check_response_status(
+            requests.delete(url=url, headers=self.base_headers)
         )
 
         return response
