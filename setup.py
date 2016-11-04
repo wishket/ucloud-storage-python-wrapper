@@ -6,7 +6,7 @@ setup(
     # package name
     name='ucloud-storage-python-wrapper',
     # package version
-    version='0.0.7',
+    version='0.0.9',
 
     py_modules=['uspw', ],
 

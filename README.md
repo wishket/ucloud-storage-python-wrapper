@@ -33,14 +33,11 @@ KT ucloud storage wrapper with python
 ## How to use.
 1. install package.
 `pip install ucloud-storage-python-wrapper`
-2. create manager object by authentication.
+2. create manager object by authentication. then use wrapper api.
 ```
 from uspw.manager import UcloudManager
-
 manager = UcloudManager(key='{user_key}', email='{ucloud_user_email}')
-```
-3. use wrapper api.
-```
+
 result = manager.put_object_to_container('my_container', file_stream)
 ```
 

@@ -27,7 +27,7 @@ def check_response_status(response):
     elif status == 403:
         raise NoPermission
     elif status == 404:
-        raise NoContainer
+        raise NoTargetObject
     elif status == 409:
         raise CanNotDelete
     return response

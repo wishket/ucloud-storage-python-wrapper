@@ -9,12 +9,12 @@ class NotAuthorized(Exception):
         return u"Not Authorized. Account Token has problem."
 
 
-class NoContainer(Exception):
+class NoTargetObject(Exception):
     """
     status code 404
     """
     def __str__(self):
-        return u"container does not exist."
+        return u"container or object does not exist."
 
 
 class NoPermission(Exception):

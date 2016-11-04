@@ -326,6 +326,8 @@ class UcloudManager(object):
             requests.get(url=url, headers=self.base_headers)
         )
 
+        return response.content
+
     def post_object_metadata(self, container_name, file_name, params, action):
         """
         post account's metadata for add, delete
