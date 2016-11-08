@@ -48,3 +48,9 @@ class ContentLengthOver(Exception):
 class UcloudAccountDataDoesNotExist(Exception):
     def __str__(self):
         return u"django settings file does not have UCLOUD_EMAIL, UCLOUD_KEY."
+
+
+class ImportDjangoError(Exception):
+    def __str__(self):
+        return u"Cannot import django's conf module and storage module. " \
+               u"Check your django path."
