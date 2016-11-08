@@ -2,5 +2,5 @@
 .idea
 options.py
 *.pyc
-ucloud-storage-python-wrapper-0.0.*.tar.gz
+ucloud-storage-python-wrapper-*.*.*.tar.gz
 gh-md-toc
